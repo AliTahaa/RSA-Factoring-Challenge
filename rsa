@@ -1,0 +1,58 @@
+#!/usr/bin/python3
+
+from sys import argv
+import time
+import math
+
+def is_prime(num):
+  if num <= 1:
+    return False
+  for i in range(2, int(math.sqrt(num)) + 1):
+    if num % i == 0:
+      return False
+  return True
+
+def factorize_prime(number):
+  start_time = time.time() 
+  if time.time() - start_time > 5:
+    return None
+
+  if number % 2 == 0:
+    p = 2
+    while number % 2 == 0:
+      number //= 2
+  else:
+    p = 1
+  q = number
+
+  for i in range(3, int(math.sqrt(number)) + 1, 2):
+    if number % i == 0:
+      if not is_prime(i):
+        return None 
+      p = i
+      q = number // i
+      while number % i == 0:
+        number //= i
+      break
+  if number > 1 and is_prime(number):
+    q = number
+
+  if p == 1 and q == 1:
+    return None
+
+  return p, q
+
+if __name__ == "__main__":
+  filename = argv[1]
+  try:
+    with open(filename, 'r') as file:
+      number = int(file.readline().strip())
+      factors = factorize_prime(number)
+      if factors:
+        print(f"{number}={factors[0]}*{factors[1]}")
+      else:
+        print(f"{number} is prime or cannot be factored within 5 seconds")
+  except FileNotFoundError:
+    print(f"Error: File '{filename}' not found.")
+  except ValueError:
+    print(f"Error: Invalid input in file '{filename}'.")
